@@ -1,0 +1,40 @@
+function F = ode_projectile(t,u)
+% function output =name(input)
+% right-hand side function for Matlab's ODE solver,
+
+% In our case we will use:
+% u(1) -> x
+% u(2) -> v
+
+% declare the globals so its value
+% set in the main script can be used here
+global g_eff; global R; 
+global g; %global a_rocket;
+global a_hori;
+
+% make the column vector F filled with zeros
+F=zeros(length(u),1);
+
+% Now build the elements of F
+%
+% so the equation dx/dt=v means that F(1)=u(2)
+F(1) = u(3);
+F(2) = u(4);
+% Again, in our original ODEs we have:
+
+% so the equation dv/dt=-....
+if (t < 100)
+    F(3) = g_eff * (u(1)/(R+u(1))) ^ 2;
+else 
+    F(3) = g * (u(1)/(R+u(1))) ^ 2;
+end
+
+if (t > 500)
+    a_hori = 100;
+end
+
+if (t > 1500)
+    a_hori = 0;
+end
+
+F(4) = a_hori;

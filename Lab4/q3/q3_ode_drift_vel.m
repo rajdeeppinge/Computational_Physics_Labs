@@ -1,0 +1,89 @@
+function F = q3_ode_drift_vel(t,u)
+% function output =name(input)
+% right-hand side function for Matlab's ODE solver,
+F=zeros(length(u),1);
+ 
+% In our case we will use:
+% u(1) -> x
+% u(2) -> y
+% u(3) -> z
+% u(4) -> vx
+% u(5) -> vy
+% u(6) -> vz
+ 
+% declare the globals so its value
+% set in the main script can be used here
+global Bx; global By; global Bz;
+global Ex; global Ey; global Ez;
+global q; global m; 
+global x_init; global y_init; global z_init;
+global cyclo_time;
+global comp_radius;
+global comp_freq;
+
+global drift_v;
+global t1; global t2;
+
+global tstart; global tfinal; global dt;
+global counter;
+global c1n; global c2n;
+ 
+xf=0; yf=0; zf=300e3;
+ 
+%Bz=0.11*u(1); //uncomment this when we want a position dependent field
+F(1) = u(4);
+F(2) = u(5);
+F(3) = u(6);
+F(4) = q/m * (Ex + u(5)*Bz - By*u(6));
+F(5) = q/m * (Ey + u(6)*Bx - Bz*u(4));
+F(6) = q/m * (Ez + u(4)*By - Bx*u(5))-9.8; %weight  considered.
+ 
+counter=counter+1; %increments in each iteration
+ 
+if t==0
+   %now find the ideal case for point 1
+[t1,u1] = ode45(@q3_auxode,[tstart:dt:tfinal],u,close);
+ 
+ pos_u1_y = u1(:,2);
+ 
+    for k=1:length(u1)
+            %search for time t/2
+            %extract the y coodi array
+            if t1(k)>=cyclo_time
+                    c1n=(pos_u1_y(k)+u(2))/2
+                    break;
+            end
+    end
+    
+    %now do the ideal case for init point t+dt
+    u_init_new=u;
+    
+end
+ 
+if counter==2
+    u_init_new(1)=u(1);
+    u_init_new(2)=u(2);
+    u_init_new(3)=u(3);
+    u_init_new(4)=u(4);
+    u_init_new(5)=u(5);
+    u_init_new(6)=u(6); %all incer by dt
+    
+    [t2,u2] = ode45(@q3_auxode,[tstart:dt:tfinal],u_init_new,close);
+ 
+    pos_u2_y = u2(:,2);
+    
+    for j=1:length(u2)
+            %search for time t/2
+            if t2(j)>=cyclo_time
+                    c2n=(pos_u2_y(j)+ u_init_new(2))/2
+                    break;
+            end
+    end
+    
+    drift_v=(c2n-c1n)/(1*dt)
+    
+end
+ 
+ 
+ 
+

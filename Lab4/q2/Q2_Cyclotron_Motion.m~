@@ -1,0 +1,58 @@
+clear;
+close all;
+
+%initial conditions
+global Bx; global By; global Bz;
+Bx =5e-5; By =0 ; Bz =0; 
+
+global Ex; global Ey; global Ez;
+Ex = 0; Ey =0; Ez =0;
+
+global q;
+q = 1.6e-19;
+
+
+global m;
+m =9.1e-31;
+
+k=1.38e-23;
+T=1000;
+v_thermal=sqrt(k*T/m);
+total_time =1e-6;
+dt = 1e-8;
+
+
+x = 0;
+y = 0;
+z = 300e3;
+vx =0;
+vy =0;
+vz =v_thermal;
+cyclo_freq=q*Bz/2*pi*m;
+% set the initial and final times
+tstart=0;
+tfinal=total_time;
+
+% set the initial conditions in the y0 column vector
+global x2;global y2;
+
+u_init = zeros(6,1);  
+u_init(1) = x; % initial position; %theta(1)=.2;
+u_init(2) = y; % initial velocity
+u_init(3) = z;
+u_init(4) = vx;
+u_init(5) = vy;
+u_init(6) = vz;
+
+options=odeset('RelTol',1e-5);
+[t,u] = ode45(@q2_ode_cyclotron,[tstart:dt:tfinal],u_init,close);
+
+% store the solution that comes back into x and v arrays
+pos_x = u(:,1);
+pos_y = u(:,2);
+pos_z = u(:,3);
+vel_x = u(:,4);
+vel_y = u(:,5);
+vel_z = u(:,6);
+
+plot3(pos_x,pos_y,pos_z)

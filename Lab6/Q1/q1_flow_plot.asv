@@ -1,0 +1,23 @@
+clear;
+close all;
+
+xarr = -10:10;  %array of x values
+yarr = -10:10;  %array of y values
+
+%Define the grid of arrays x and y
+[x,y] = meshgrid(xarr, yarr);
+
+%Define the velocity arrays vx and v
+vx = 0.2.*x.*x+0.5.*y.*y+20;
+vy = -0.1.*y.*y.*y+0.5.*x.*x-10;
+
+%Create a quiver plot of the flow velocity
+figure
+quiver(x,y,vx,vy,'m')
+xlabel('position in x')
+ylabel('position in y')
+title('flow plot')
+
+starty = -10:1:10;
+startx = -10.*ones(size(starty));
+streamline(x,y,vx,vy,startx,starty)

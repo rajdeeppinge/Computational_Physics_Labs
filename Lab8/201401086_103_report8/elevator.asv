@@ -1,0 +1,53 @@
+clear;
+close all;
+
+%define the basic parameters
+mass = 1;       %mass of the ball
+
+g = -9.8 ;      %gravitational acceleration, convetion, the downward direction is negative.
+
+a_elevator = -15; %acceleration of the elevator
+
+% effective acceleration acting on the ball
+global g_eff;
+g_eff = g - a_elevator;
+
+
+total_time = 10;
+tstart = 0;
+tfinal = total_time;
+dt = total_time/100;
+
+
+y_init = 0;     % assuming the vertical direction is y direction
+v_init = 0;
+
+u0=zeros(2,1);  
+
+u0(1) = y_init; % initial position
+u0(2) = v_init; % initial velocity
+
+% ode solver
+options = odeset('RelTol',1e-8);
+[t,u] = ode45(@elevator_ode, [tstart:dt:tfinal], u0, options);
+
+
+%[tp,up]=ode45(@elevator_ode,[tstart:dt:tfinal],u0,options);
+% store the solution that comes back into x and v arrays
+x = u(:, 1); % radian-->degree
+vx = u(:, 2);
+
+% plot the position vs. time
+plot(t, x)
+title('Position wrt to the elevator frame vs. Time')
+xlabel('time (sec)');
+ylabel('position of ball in y-direction (m)');
+
+y = zeros(length(x), 1); %since 1 dimensional motion
+vy = zeros(length(x), 1);
+
+figure
+quiver(y, x, vy, vx)
+title('quiver plot')
+xlabel('x');
+ylabel('y');

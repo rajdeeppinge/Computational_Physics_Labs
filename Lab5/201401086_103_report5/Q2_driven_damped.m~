@@ -1,0 +1,125 @@
+clear;
+close all;
+% declare the pendulam variables to be global and set it
+
+
+g = 9.8;
+l = 1;
+
+global omega_not;
+omega_not = sqrt(g/l);
+
+b = 0.1;              % critical case 2*l*sqrt(g/l);
+m = 1;
+
+global f0;
+f0 = 100;
+
+global omega_dri;
+omega_dri = 20;%*sqrt(g/l);
+
+global beta;
+%beta = b/(2*m);
+
+timescale = 2*pi*sqrt(l/g);
+dt = timescale/100;
+
+% set the initial and final times
+tstart = 0;
+tfinal = 4*timescale;
+
+% set the initial conditions in the y0 column vector
+u_init = zeros(2,0);  
+u_init(1) = 0.5; % initial position; %theta(1)=.2;
+u_init(2) = 0; % initial velocity
+
+
+
+%without damping
+%beta = 0;              % critical case 2*l*sqrt(g/l);
+
+% set the solve options
+%options=odeset('RelTol',1e-8);
+%[t,u]=ode45(@q2_ode_driven_damped, [tstart:dt:tfinal], u_init, options);
+
+% store the solution that comes back into x and v arrays
+%x = (180/pi)*u(:,1); % radian-->degree
+%v = u(:,2);
+
+
+
+%underdamped
+beta = 3.1;              % critical case 2*l_damping*sqrt(g/l);
+
+% set the solve options
+amplitude_arr=zeros(ceil(5*omega_not/0.1),1);
+pointer=1;
+for omega_dri=0:0.1:(5*omega_not)
+    %call ode
+options=odeset('RelTol',1e-8);
+[t,u]=ode45(@q2_ode_driven_damped, tstart:dt:tfinal, u_init, options);
+
+%extract quan opf x(angular disp) ie u(1)
+x = (180/pi)*u(:,1);
+
+k=length(x);
+temp_amp=abs(x(k)); %last val
+
+
+
+
+while  abs(x(k))>=temp_amp
+%for each B loop freq find ampli. for each case find amp by exam form back
+ 
+temp_amp=abs(x(k));
+
+    k=k-1;
+end
+
+amplitude_arr(pointer)=temp_amp;
+pointer=pointer+1;
+
+end
+
+omega_dri=0:0.1:(5*omega_not);
+figure
+plot(omega_dri,amplitude_arr)
+
+
+%critically damped
+%beta = sqrt(g/l);              % critical case sqrt(g/l);
+
+% set the solve options
+%options=odeset('RelTol',1e-8);
+%[t,u]=ode45(@q2_ode_driven_damped, [tstart:dt:tfinal], u_init, options);
+
+% store the solution that comes back into x and v arrays
+%x3 = (180/pi)*u(:,1); % radian-->degree
+%v3 = u(:,2);
+
+
+
+%overdamped
+%beta = 15;              % critical case 2*l*sqrt(g/l);
+
+% set the solve options
+%options=odeset('RelTol',1e-8);
+%[t,u]=ode45(@q2_ode_driven_damped, [tstart:dt:tfinal], u_init, options);
+
+% store the solution that comes back into x and v arrays
+%x4 = (180/pi)*u(:,1); % radian-->degree
+%v4 = u(:,2);
+
+
+% plot the position vs. time
+%plot(t,x, t,x2,'r-', t,x3,'g', t,x4, 'm--')
+%title('Motion of pendulum')
+%xlabel('time')
+%ylabel('position')
+
+% make a "phase-space" plot of v vs. x
+%figure
+%plot(x,v, x2,v2,'r-', x3,v3,'g',  x4,v4, 'm--')
+%title('Phase-space diagram')
+%xlabel('position')
+%ylabel('velocity')

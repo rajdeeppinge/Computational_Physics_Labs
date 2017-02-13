@@ -1,0 +1,94 @@
+clear;
+close all;
+% declare the pendulam variables to be global and set it 
+
+
+g = 9.8;
+l = 0.1;
+
+global const;
+const = g/l;
+
+b = 0.1;              % critical case 2*l*sqrt(g/l);
+m = 1;
+
+global beta;
+beta = b/(2*m);
+
+timescale = 2*pi*sqrt(l/g);
+dt = timescale/100;
+
+% set the initial and final times
+tstart = 0;
+tfinal = 10*timescale;
+
+% set the initial conditions in the y0 column vector
+u_init = zeros(2,1);  
+u_init(1) = 0.5; % initial position; %theta(1)=.2;
+u_init(2) = 0; % initial velocity
+
+
+
+%without damping
+beta = 0;              % critical case 2*l*sqrt(g/l);
+
+% set the solve options
+options=odeset('RelTol',1e-8);
+[t,u]=ode45(@q4_pendulumodefunction, [tstart,tfinal], u_init, options);
+
+% store the solution that comes back into x and v arrays
+x = (180/pi)*u(:,1); % radian-->degree
+v = u(:,2);
+
+
+
+%underdamped
+beta = 0.1;              % critical case 2*l*sqrt(g/l);
+
+% set the solve options
+options=odeset('RelTol',1e-8);
+[t,u]=ode45(@q4_pendulumodefunction, [tstart,tfinal], u_init, options);
+
+% store the solution that comes back into x and v arrays
+x2 = (180/pi)*u(:,1); % radian-->degree
+v2 = u(:,2);
+
+
+
+%critically damped
+beta = sqrt(g/l);              % critical case sqrt(g/l);
+
+% set the solve options
+options=odeset('RelTol',1e-8);
+[t,u]=ode45(@q4_pendulumodefunction, [tstart,tfinal], u_init, options);
+
+% store the solution that comes back into x and v arrays
+x3 = (180/pi)*u(:,1); % radian-->degree
+v3 = u(:,2);
+
+
+
+%overdamped
+beta = 15;              % critical case 2*l*sqrt(g/l);
+
+% set the solve options
+options=odeset('RelTol',1e-8);
+[t,u]=ode45(@q4_pendulumodefunction, [tstart,tfinal], u_init, options);
+
+% store the solution that comes back into x and v arrays
+x4 = (180/pi)*u(:,1); % radian-->degree
+v4 = u(:,2);
+
+
+% plot the position vs. time
+plot(t,x,'y+ t,x2,'r-', t,x3,'g^', t,x4, 'b--')
+title('Motion of pendulum')
+xlabel('time')
+ylabel('position')
+
+% make a "phase-space" plot of v vs. x
+figure
+plot(x,v)
+title('Phase-space diagram')
+xlabel('position')
+ylabel('velocity')

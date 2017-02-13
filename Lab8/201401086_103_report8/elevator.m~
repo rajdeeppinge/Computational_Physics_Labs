@@ -1,0 +1,60 @@
+clear;
+close all;
+
+%define the basic parameters
+M = 1; %masss of the body
+g = -9.8 ; %basic gravitational acceleration, convetion, the downward direction is negative.
+a_elevator=9.8; %acceleration of the elevator
+global g_eff;
+g_eff=g-a_elevator;
+
+total_time=100;
+tstart=0;
+tfinal=total_time;
+dt=1e-3;
+
+
+%init condi and rest of the code
+% set the initial conditions in the y0 column vector
+u0=zeros(2,1);  
+person0=zeros(2,1);
+
+u0(1)=0; % initial position; %theta(1)=.2;
+u0(2)=1000; % initial velocity
+person0(1)=0; % initial position; %theta(1)=.2;
+person1(2)=0;
+
+% set the solve options
+options=odeset('RelTol',1e-8); %%%%%% Assignment to understand "options"
+[t,u]=ode45(@elevator_ode,[tstart:dt:tfinal],u0,options);
+%[t,u]=ode45(@rhs,[tstart:dt:tfinal],u0);
+
+[tp,up]=ode45(@elevator_ode,[tstart:dt:tfinal],u0,options);
+% store the solution that comes back into x and v arrays
+x=u(:,1); % radian-->degree
+vx=u(:,2);
+xp=up(:,1);
+vp=up(:,2);
+
+
+%for loop to find out when ball and person meet again 
+for loop=1:length(x)
+    if 
+    end
+end
+
+% plot the position vs. time
+plot(t,x)
+title('Position wrt to the elevator frame vs. Time')
+xlabel('time');
+ylabel('position of ball');
+% make a "phase-space" plot of v vs. x
+
+y=zeros(length(x),1); %since 1 dimensional motion
+vy=zeros(length(x),1);
+
+figure
+quiver(y,x,vy,vx)
+title('quiver plot')
+xlabel('x');
+ylabel('y');
